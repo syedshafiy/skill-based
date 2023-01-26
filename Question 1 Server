@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <time.h>
+
+int main(int argc, char *argv[]) {
+    int sockfd, newsockfd, portno;
+    socklen_t clilen;
+    struct sockaddr_in serv_addr, cli_addr;
+    int n;
+
+    srand(time(0)); // seed the random number generator
+
+    // create a socket
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) {
+        perror("ERROR opening socket");
+        exit(1);
+    }
+
+    // clear the server address structure
+    memset((char *) &serv_addr, 0, sizeof(serv_addr));
+
+    // get the port number
+    portno = atoi(argv[1]);
+
+    // set up the server address structure
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons(portno);
+
+    // bind the socket to the port
+    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+        perror("ERROR on binding");
+        exit(1);
+    }
+
+    // listen for incoming connections
+    listen(sockfd, 5);
+    clilen = sizeof(cli_addr);
+
+    // accept a connection
+    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+    if (newsockfd < 0) {
+        perror("ERROR on accept");
+        exit(1);
+    }
+
+    int random_number = rand() % 900 + 100; // generate a random number between 100 and 999
+
+    // send the random number to the client
+    n = write(newsockfd, &random_number, sizeof(random_number));
+    if (n < 0) {
+        perror("ERROR writing to socket");
+        exit(1);
+    }
+
+    close(newsockfd);
+    close(sockfd);
+
+    return 0;
+}
