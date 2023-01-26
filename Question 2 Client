@@ -1,0 +1,22 @@
+def main():
+    host = "192.168.150.129"
+    port = 12345
+
+    # create a socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((host, port))
+
+    # get user input
+    temperature_in_fahrenheit = input("Enter temperature in Fahrenheit: ")
+
+    # send the temperature to the server
+    s.send(temperature_in_fahrenheit.encode())
+
+    # receive the converted temperature from the server
+    temperature_in_celsius = s.recv(1024).decode()
+
+    # display the converted temperature
+    print("Temperature in Celsius: " + str(temperature_in_celsius))
+
+if __name__ == "__main__":
+    main()
