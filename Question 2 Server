@@ -1,0 +1,35 @@
+def fahrenheit_to_celsius(fahrenheit):
+    celsius = (fahrenheit - 32) * (5/9)
+    return celsius
+
+def main():
+    host = "0.0.0.0"
+    port = 12345
+
+    # create a socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((host, port))
+    s.listen()
+
+    print("Server Started")
+
+    while True:
+        # accept a connection
+        c, addr = s.accept()
+        print("Connection from: " + str(addr))
+
+        # receive data from the client
+        data = c.recv(1024).decode()
+        if not data:
+            break
+
+        # convert the received temperature to celsius
+        temperature_in_celsius = fahrenheit_to_celsius(float(data))
+
+        # send the converted temperature back to the client
+        c.send(str(temperature_in_celsius).encode())
+
+        c.close()
+
+if __name__ == "__main__":
+    main()
