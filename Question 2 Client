@@ -1,3 +1,5 @@
+import socket
+
 def main():
     host = "192.168.150.129"
     port = 12345
